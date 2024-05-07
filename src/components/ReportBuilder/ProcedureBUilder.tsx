@@ -465,7 +465,7 @@ const ProcedureBuilderPage: FunctionComponent<ProcedureBuilderPageProps> = (prop
     }
 
     return (
-        <div className="container" style={{marginTop:'60px'}}>            
+        <div className="container mt-60">            
             <div className="container-legent">
              <div className="new-heading">Conditional Selection</div>
             <div className="row mt-2">

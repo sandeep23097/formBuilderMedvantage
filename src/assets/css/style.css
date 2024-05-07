@@ -170,10 +170,37 @@ section {
   background-color: #ffffff;
 }
 
+
+/* moon  */
+
 @media (max-width: 768px) {
   section {
     padding: 40px 0;
   }
+
+  /* .nav-container .toggle-button{
+    display: block !important;
+    position: absolute;
+    right: 12px;
+  }  */
+
+/* .nav-container .nav-wrappper {
+  display: flex;  
+  position: absolute;
+  left: 0;
+  flex-direction: column;
+  width: 100%;
+  background: #ffb41f;
+  top: 50px;
+  padding-left: 38px; 
+  line-height: 30px;
+  padding-top: 10px;  
+} */
+
+.nav-container .nav-wrappper {   
+  line-height: 30px;  
+}
+  
 }
 
 @media (max-width: 1024px) {
@@ -20607,3 +20634,84 @@ body[data-bg-image] {
 } */
 
 /*# sourceMappingURL=style.css.map */
+
+
+.custom-inner{
+  background-color: #FFB41F !important;
+  border-bottom: #FFB41F !important;
+}
+
+
+.custom-inner a {
+  color: aliceblue !important;
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+}
+
+.custom-inner a:hover{
+  font-size: 1rem;
+  color: white !important;
+}
+
+.mt-60{
+  margin-top: 60px;
+}
+
+.nav-container{
+  display: flex;
+  gap: 40px;
+  
+}
+
+
+.nav-container .logo{
+  width: 185px;
+
+}
+
+.nav-container .logo img{
+width: 100%;
+}
+
+.nav-container .nav-wrappper{
+display: flex;
+gap: 10px;
+flex-wrap: wrap;
+
+}
+
+.nav-container .toggle-button{
+  display: none;
+
+}
+
+.nav-container .nav-n-logo{
+display: flex;
+width: 100%;
+justify-content: space-between;
+}
+
+.nav-container .toggle-button button{
+  outline: none;
+  border: 2px solid white;
+  background: transparent;
+  padding-top: 4px;
+  border-radius: 2px;  
+}
+
+.nav-container .toggle-button button div {
+  height: 1px;
+  background-color: white;
+  margin-bottom: 4px;
+  width: 28px;
+}
+
+.d-block{
+  display: block;
+}
+
+.delete-icon{
+ border-radius: 4px !important;
+
+}
