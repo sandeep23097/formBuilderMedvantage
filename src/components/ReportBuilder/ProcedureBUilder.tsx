@@ -17,11 +17,12 @@ interface ProcedureBuilderPageProps {
     isShowConditions: boolean;
     setResultedQuery: (item: any) => void;
     setResultedData: (item: any) => void;
+    setPostData: (item: any) => void;
 }
 
 const ProcedureBuilderPage: FunctionComponent<ProcedureBuilderPageProps> = (props) => {
     // Dummy data for items
-    const { isShowJoin,isShowConditions,setResultedQuery,setResultedData } = props;
+    const { isShowJoin,isShowConditions,setResultedQuery,setResultedData,setPostData } = props;
     const joinTypeItems = [
         { label: 'INNER JOIN', value: 'INNER JOIN' },
         { label: 'LEFT JOIN', value: 'LEFT JOIN' },
@@ -60,11 +61,18 @@ const ProcedureBuilderPage: FunctionComponent<ProcedureBuilderPageProps> = (prop
     const [coulmns, setCoulmns] = useState();
     const [joincoulmns1, setJoinCoulmns1] = useState();
     const [joincoulmns2, setJoinCoulmns2] = useState();
+  
 
     const [joinList, setJoinList] = useState([]);
     const [conditionList, setConditionList] = useState([]);
     const [selectedCols, setSelectedCols] = useState([]);
     const [sqlQuery, setSqlQuery] = useState<string>('');
+
+    const [selectedColsString, setSelectedColsString] = useState<string>('');
+    const [selectedConditionString, setSelectedConditionString] = useState<string>('');
+    const [selectedJoinTableString, setSelectedJoinTableString] = useState<string>('');
+    const [selectedJoinCondtionString, setSelectedJoinCondtionString] = useState<string>('');
+    const [selectedJoinTypeString, setSelectedJoinTypeString] = useState<string>('');
     useEffect(() => {
         if (selectedDatabase) {
             setIsLoading(true);
@@ -257,8 +265,10 @@ const ProcedureBuilderPage: FunctionComponent<ProcedureBuilderPageProps> = (prop
         var sCol = selectedSecondJoinCoulmn;
         var li = [];
          li = joinList;
-        var d =  {first : fTable + '.' + fCol, second : sTable + '.' + sCol,type:selectedJoinType};
+        var d =  {firstTable : fTable ,secondTable : sTable,first :  fCol, second :  sCol,type:selectedJoinType};
         const isDuplicate = li.some(item => (
+            item.firstTable === d.firstTable &&
+            item.secondTable === d.secondTable &&
             item.first === d.first &&
             item.second === d.second &&
             item.type === d.type
@@ -346,32 +356,79 @@ const ProcedureBuilderPage: FunctionComponent<ProcedureBuilderPageProps> = (prop
 
     const generateQuery = () => {
         let query = 'SELECT ';
-        query += selectedCols.map(col => col.id).join(', ');
+        var colString = selectedCols.map(col => col.id).join(', ');
+        setSelectedColsString(colString);
+        query += colString;
         query += ' FROM ';
         query += selectedTable;//selectedTable.map(table => table.name).join(', ');
-    
+        var joinString = '';
         if (joinList.length > 0) {
             joinList.forEach(join => {
-            query += " " + join.type + " " + join.first + " ON " + join.first +  " = " + join.second;
+                //joinString += secondTable " " + join.type + " " + join.secondTable + " ON " + join.first +  " = " + join.second;
+
+            query += " " + join.type + " " + join.secondTable + " ON " + join.first +  " = " + join.second;
           });
+        //   setSelectedJoinString(joinString);
         }
-    
+        var joinTableArray = [];
+        var joinTableString = '';
+        var joinConditionString = '';
+        var joinTypenString = '';
+        if (joinList.length > 0) {
+            joinList.forEach(join => {
+                if(!joinTableArray.includes(join.secondTable))
+                    {
+                        joinTableArray.push(join.secondTable);
+                    }
+                    if(!joinTableArray.includes(join.firstTable))
+                        {
+                            joinTableArray.push(join.firstTable);
+                        }
+                        joinConditionString = joinConditionString + join.first +  " = " + join.second + ";"; 
+                        joinTypenString = joinTypenString + join.type +";";
+              
+          });
+          joinTableString = joinTableArray.map(col => col).join(';');
+          setSelectedJoinTableString(joinTableString);
+          setSelectedJoinTypeString(joinTypenString);
+          setSelectedJoinCondtionString(joinConditionString)
+        //   setSelectedJoinString(joinString);
+        }
+
+
+        var conditionString = '';
         if (conditionList.length > 0) {
           query += ' WHERE ';
           var i = 0;
           conditionList.forEach(condition => {
             if(i != 0)
                 {
+                    conditionString = conditionString + " AND ";
                     query += " AND "
                 }
+                conditionString = conditionString + condition.first + "  " + condition.condtionType +  " " + condition.second;
             query +=  condition.first + "  " + condition.condtionType +  " " + condition.second;
             i++;
           });
+          setSelectedConditionString(conditionString);
         }
     
         setSqlQuery(query);
         setResultedQuery(query);
         setResultedData(selectedCols);
+        const postData = {
+            queryTemplateName: 'Undefined',
+            schemaName: selectedDatabase,
+            tableName: selectedTable,
+            columns: selectedColsString,
+            whereCondition: conditionString,
+            joinTableNames: selectedJoinTableString,
+            joinConditions: selectedJoinCondtionString,
+            joinTypes: selectedJoinTypeString,
+            userId: 0,
+            clientId: 0,
+          };
+          setPostData(postData);
       };
 
 

@@ -86,7 +86,7 @@ const RenderItem: FC<RenderItemProps> = (props)=> {
             <Select
               // style={{minWidth: '100%'}}
               variant="outlined"
-              value={item.items && item.items[0].value}
+              value={item.items.length  > 0 && item.items && item.items[0].value}
             >
               {item.items?.map((i, ind) => (
                 <MenuItem key={i.value} value={i.value}>
