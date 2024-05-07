@@ -71,7 +71,7 @@ const FormLayoutComponent: FunctionComponent<
               ></i>
             </div>
           </div>
-          <h5
+          <h6
             className={`text-center mt-3 ${
               template && template.publishStatus === FormPublishStatus.PUBLISHED
                 ? "text-success"
@@ -81,10 +81,10 @@ const FormLayoutComponent: FunctionComponent<
             {createdFormLayout
               ? (template as TemplateType).formName
               : "Blank Form"}
-          </h5>
+          </h6>
           {createdFormLayout ? (
             <>
-              <IconButton aria-label="delete" onClick={()=>{
+              <IconButton className="delete-icon" aria-label="delete" onClick={()=>{
                 if(confirm('Are you sure you want to delete the template?')){
                   dispatch(deleteTemplate(template?.id as string));
                 }

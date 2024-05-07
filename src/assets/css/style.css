@@ -20666,7 +20666,7 @@ body[data-bg-image] {
 
 
 .nav-container .logo{
-  width: 220px;
+  width: 185px;
 
 }
 
@@ -20709,4 +20709,9 @@ justify-content: space-between;
 
 .d-block{
   display: block;
+}
+
+.delete-icon{
+ border-radius: 4px !important;
+
 }
