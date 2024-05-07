@@ -6,7 +6,6 @@ import { FormControlNames, FormItemTypes } from '../../../utils/formBuilderUtils
 import { FormLayoutComponentsType } from '../../../types/FormTemplateTypes';
 import _ from "lodash";
 import useModalStrip from '../../../global-hooks/useModalStrip';
-import ManageItemsListComponentFromQuery from './ManageItemsListComponentFromQuery';
 import QueryBuilderModalComponent from '../QueryBuilderModal';
 
 const textboxStyle={
@@ -35,6 +34,8 @@ const EditPropertiesComponent: FC<EditPropertiesComponentProps> = (props)=> {
   const childUpdatedItem = updatedItem as FormLayoutComponentChildrenType;
   const containerUpdatedItem = updatedItem as FormLayoutComponentContainerType;
   const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const [isGotApiItemData, setIsGotApiItemData] = useState<boolean>(false);
+  const [apiItemData, setApiItemData] = useState();
   
   const [isUpdatedItemRequired, setIsUpdatedItemRequired] = useState(false);
 
@@ -43,6 +44,11 @@ const EditPropertiesComponent: FC<EditPropertiesComponentProps> = (props)=> {
 
   const {showModalStrip} = useModalStrip();
 
+  useEffect(()=>{
+console.log("RRRRRRRRRRRRR",apiItemData);
+setIsGotApiItemData(true);
+setOpenDialog(false);
+  },[apiItemData]);
   useEffect(()=>{
     if(selectedControl){
       if((selectedControl as FormLayoutComponentChildrenType).items){
@@ -113,11 +119,35 @@ const EditPropertiesComponent: FC<EditPropertiesComponentProps> = (props)=> {
 
   const onFormSubmit: React.FormEventHandler<HTMLFormElement> = (event)=>{
     event.preventDefault();
-    editControlProperties(updatedItem as FormLayoutComponentChildrenType);
+    if(selectedListItemType === 'Query')
+      {
+        console.log("**************",apiItemData);
+        setUpdatedItem((prevState)=>({
+          ...prevState, items: [],apiItemsDetails: apiItemData
+        }));
+        editControlProperties({
+          ...updatedItem, // Pass the updatedItem state
+          items: [], // Assuming this is the correct structure for editControlProperties
+          apiItemsDetails: apiItemData // Pass the apiItemData
+        } as FormLayoutComponentChildrenType);
+      }
+      else
+      {
+        editControlProperties(updatedItem as FormLayoutComponentChildrenType);
+      }
+  
   }
 
   const onContainerFormSubmit: React.FormEventHandler<HTMLFormElement> =(event)=>{
     event.preventDefault();
+    if(selectedListItemType === 'Query')
+      {
+        console.log("**************",apiItemData);
+        setUpdatedItem((prevState)=>({
+          ...prevState, items: [],apiItemsDetails: apiItemData
+        }));
+      }
+  
     editContainerProperties((updatedItem as FormLayoutComponentContainerType));
   }
 
@@ -308,12 +338,30 @@ const EditPropertiesComponent: FC<EditPropertiesComponentProps> = (props)=> {
              />
             )}
         {selectedListItemType === 'Query' && (
-          <QueryBuilderModalComponent
-          openDialog={openDialog}
-          setOpenDialog={setOpenDialog}
-        />
-            
-            )}
+  <>
+    <QueryBuilderModalComponent
+      openDialog={openDialog}
+      setOpenDialog={setOpenDialog}
+      setApiItemData={setApiItemData}
+    />
+    {isGotApiItemData === true && openDialog == false && (<><h6>{apiItemData.queryTemplateName}</h6>
+    <br />
+    <span>
+   id:  {apiItemData.id}
+   </span>
+   <br />
+    <span>
+   value:  {apiItemData.value}
+   </span>
+   <br />
+    <span>
+   Label:  {apiItemData.label}
+   </span> 
+   <br /> 
+      </>
+     )}
+  </>
+)}
 
 
                       

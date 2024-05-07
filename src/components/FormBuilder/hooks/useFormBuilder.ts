@@ -96,6 +96,7 @@ const useFormBuilder = (props: useFormBuilderProps) => {
 
   // Edit properties of the control from Sidebar
   const editControlProperties = (item: FormLayoutComponentChildrenType) => {
+    console.log('**********1111',item);
     const newState = formLayoutComponents.slice();
     const formContainerId = newState.findIndex((comp)=>comp.container.id === item.containerId);
     let formContainer = {...newState[formContainerId]};
@@ -113,6 +114,7 @@ const useFormBuilder = (props: useFormBuilderProps) => {
 
   // Edit properties of the container
   const editContainerProperties = (item: FormLayoutComponentContainerType) => {
+    console.log('**********1111',item);
     const newState = formLayoutComponents.slice();
     const formContainerId = newState.findIndex((comp)=>comp.container.id === item.id);
     const formContainer = {...newState[formContainerId]};

@@ -64,6 +64,7 @@ const renderItem = (item: FormLayoutComponentChildrenType)=>{
       </>
     
     case FormControlNames.SELECTDROPDOWN:
+    
       return <>
         <FormControl style={{minWidth:'100%'}}>
           {/* <InputLabel>{item.labelName + (item.required?" *":"")}</InputLabel> */}
@@ -71,7 +72,7 @@ const renderItem = (item: FormLayoutComponentChildrenType)=>{
           // style={{minWidth: '100%'}}
           variant='outlined'
           disabled
-          value={item.items && item.items[0].value}
+          value={item.items.length > 0  && item.items && item.items[0].value}
           >
             {item.items?.map((i,ind)=>(
               <MenuItem key={i.value} value={i.value}>{i.label}</MenuItem>

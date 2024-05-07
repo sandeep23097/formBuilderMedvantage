@@ -10,6 +10,7 @@ import ManageItemsListComponentFromQuery from './subcomponents/ManageItemsListCo
 interface QueryBuilderModalComponentProps {
   openDialog: boolean,
   setOpenDialog: (arg: boolean)=>void
+  setApiItemData: (arg: object)=>void
 }
 
 interface NewFormDataType{
@@ -86,7 +87,7 @@ const QueryBuilderModalComponent: FunctionComponent<QueryBuilderModalComponentPr
         </DialogTitle>
         <DialogContent>
           
-                <ManageItemsListComponentFromQuery handleFormSubmit={handleFormSubmit}/>
+                <ManageItemsListComponentFromQuery handleFormSubmit={handleFormSubmit} setApiItemData={props.setApiItemData}/>
 
                
         </DialogContent>

@@ -9,6 +9,7 @@ import SelectedCoulmnsComponent from './selecetedCoulmns';
 interface ManageItemsListComponentFromQueryProps{
   // items: FormLayoutCoponentChildrenItemsType[] | undefined;
   handleFormSubmit: ()=>void;
+  setApiItemData: (data:object)=>void;
   // deleteItemFromList: (item: FormLayoutCoponentChildrenItemsType)=>void;
   // editIteminList: (item: FormLayoutCoponentChildrenItemsType)=>void;
 }
@@ -34,11 +35,12 @@ const ManageItemsListComponentFromQuery: FC<ManageItemsListComponentFromQueryPro
   const [resultedQuery, setResultedQuery] = useState('Out Put Query Here'); 
   const [resultedData, setResultedData] = useState(); 
   const [currentStep, setCurrentStep] = useState(1); 
-  const { handleFormSubmit } = props;
+  const { handleFormSubmit,setApiItemData } = props;
   const [isShowJoin, setIsShowJoin] = useState(false);
   const [isShowConditions, setIsShowConditions] = useState(false);
   const [checkboxState, setCheckboxState] = useState({});
-
+  const [selectedItemID, setSelectedItemID] = useState(''); 
+  const [selectedItemValue, setSelectedItemValue] = useState(''); 
   // Function to update checkbox state
   const handleCheckboxChange = (database, type) => {
     console.log(resultedData);
@@ -88,7 +90,32 @@ const ManageItemsListComponentFromQuery: FC<ManageItemsListComponentFromQueryPro
     setCurrentStep(3);
   }
   const onSubmit: React.MouseEventHandler<HTMLInputElement> = (event)=>{
-    if(itemName !== null && itemName !== ''){
+    // if(selectedItemID !== null && selectedItemID !== ''){
+      var selectedItemId1 = '';
+      var selectedItemValue1 = '';
+      Object.keys(checkboxState).forEach(database => {
+       
+        if (checkboxState[database]?.id) {
+          console.log("DDDDDDIIIIIIIIIIIIIIIDDDDDD",database);
+          selectedItemId1 = database;
+          setSelectedItemID(database);
+          
+        }
+        if (checkboxState[database]?.value) {
+          selectedItemValue1 = database;
+          setSelectedItemValue(database);
+        }
+      });
+      // if(selectedItemID !== null && selectedItemID !== ''){
+        setApiItemData({
+          queryId:'1',
+          queryTemplateName:'GetDoctorList',
+          id: selectedItemId1,
+          value: selectedItemValue1,
+          label: selectedItemValue1
+        })
+      // }
+      
       // if(!editMode){
       //   addItemInList({
       //     id: generateID(),
@@ -102,7 +129,7 @@ const ManageItemsListComponentFromQuery: FC<ManageItemsListComponentFromQueryPro
       //     label: itemName
       //   })
       // }
-    }
+    // }
   }
 
   const cancelEditing = ()=>{
