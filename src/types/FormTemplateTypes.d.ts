@@ -40,6 +40,7 @@ interface FormLayoutComponentChildrenType{
   icon: string,
   required: boolean,
   items?: FormLayoutCoponentChildrenItemsType[],
+  apiItemsDetails?: FormLayoutCoponentChildrenApiItemsType,
   category: string,
   index?: number,
   id: string,
@@ -51,6 +52,14 @@ interface FormLayoutComponentChildrenType{
 }
 
 interface FormLayoutCoponentChildrenItemsType{
+  id: string
+  value: string
+  label: string
+}
+
+interface FormLayoutCoponentChildrenApiItemsType{
+  queryId: string
+  queryTemplateName: string
   id: string
   value: string
   label: string
