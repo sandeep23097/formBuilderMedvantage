@@ -4,6 +4,9 @@ interface ReportBuilderPageProps {}
 
 const ReportBuilderPage: FunctionComponent<ReportBuilderPageProps> = () => {
     return (
+
+      <>
+      <div className="container mt-60">
         <a
                 href="/queryBuilder"
                 className="logo vcenter"
@@ -13,6 +16,8 @@ const ReportBuilderPage: FunctionComponent<ReportBuilderPageProps> = () => {
                
                 Query Builder
               </a>
+              </div>
+              </>
       )
 }
 
