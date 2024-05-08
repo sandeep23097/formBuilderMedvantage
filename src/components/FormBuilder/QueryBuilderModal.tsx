@@ -73,6 +73,7 @@ const QueryBuilderModalComponent: FunctionComponent<QueryBuilderModalComponentPr
           props.setOpenDialog(false);
         }}
         className='custome-modal'
+        style={{margin:'0px auto 0px auto'}}
       >
         <DialogTitle>
           <div className="d-flex align-items-center justify-content-between title">

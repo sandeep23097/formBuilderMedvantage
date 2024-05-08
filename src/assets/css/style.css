@@ -20724,3 +20724,20 @@ justify-content: space-between;
   background-color: #1D4999;
   color: white;
 }
+
+.table-template-query th{
+  white-space: nowrap;
+  background: white !important;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.table-query-button {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 115px 115px 140px;
+}
+
+.table-query-button button{
+  padding: 2px 6px !important;
+}
