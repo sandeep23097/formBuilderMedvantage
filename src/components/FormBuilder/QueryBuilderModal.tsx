@@ -11,6 +11,7 @@ interface QueryBuilderModalComponentProps {
   openDialog: boolean,
   setOpenDialog: (arg: boolean)=>void
   setApiItemData: (arg: object)=>void
+  setisSetApiItemData: (arg: object)=>void
 }
 
 interface NewFormDataType{
@@ -87,7 +88,7 @@ const QueryBuilderModalComponent: FunctionComponent<QueryBuilderModalComponentPr
         </DialogTitle>
         <DialogContent>
           
-                <ManageItemsListComponentFromQuery handleFormSubmit={handleFormSubmit} setApiItemData={props.setApiItemData}/>
+                <ManageItemsListComponentFromQuery handleFormSubmit={handleFormSubmit} setApiItemData={props.setApiItemData} setisSetApiItemData={props.setisSetApiItemData}/>
 
                
         </DialogContent>

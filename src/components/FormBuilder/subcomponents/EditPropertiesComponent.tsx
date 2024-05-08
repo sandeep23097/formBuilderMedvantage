@@ -36,6 +36,7 @@ const EditPropertiesComponent: FC<EditPropertiesComponentProps> = (props)=> {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [isGotApiItemData, setIsGotApiItemData] = useState<boolean>(false);
   const [apiItemData, setApiItemData] = useState();
+  const [isSetApiItemData, setisSetApiItemData] = useState(false);
   
   const [isUpdatedItemRequired, setIsUpdatedItemRequired] = useState(false);
 
@@ -343,8 +344,9 @@ setOpenDialog(false);
       openDialog={openDialog}
       setOpenDialog={setOpenDialog}
       setApiItemData={setApiItemData}
+      setisSetApiItemData={setisSetApiItemData}
     />
-    {isGotApiItemData === true && openDialog == false && (<><h6>{apiItemData.queryTemplateName}</h6>
+    {isSetApiItemData && (<><h6>{apiItemData.queryTemplateName}</h6>
     <br />
     <span>
    id:  {apiItemData.id}

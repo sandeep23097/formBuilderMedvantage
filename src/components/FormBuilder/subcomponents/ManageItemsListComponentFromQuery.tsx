@@ -6,10 +6,30 @@ import { generateID } from '../../../utils/common';
 import { makeStyles } from 'tss-react/mui';
 import ProcedureBuilderPage from '../../ReportBuilder/ProcedureBUilder';
 import SelectedCoulmnsComponent from './selecetedCoulmns';
+import Paper from '@mui/material/Paper';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TablePagination from '@mui/material/TablePagination';
+import TableRow from '@mui/material/TableRow';
+
+
+
+
+interface Column {
+  id: 'id' | 'queryTemplateName' | 'schemaName' | 'tableName' | 'columns' | 'whereCondition' | 'joinTableNames'| 'joinConditions'| 'joinTypes';
+  label: string;
+  minWidth?: number;
+  align?: 'right';
+  format?: (value: number) => string;
+}
 interface ManageItemsListComponentFromQueryProps{
   // items: FormLayoutCoponentChildrenItemsType[] | undefined;
   handleFormSubmit: ()=>void;
   setApiItemData: (data:object)=>void;
+  setisSetApiItemData: (data:object)=>void;
   // deleteItemFromList: (item: FormLayoutCoponentChildrenItemsType)=>void;
   // editIteminList: (item: FormLayoutCoponentChildrenItemsType)=>void;
 }
@@ -34,13 +54,16 @@ const ManageItemsListComponentFromQuery: FC<ManageItemsListComponentFromQueryPro
   const [queryTemplateName, setQueryTemplateName] = useState('Undefined'); 
   const [resultedQuery, setResultedQuery] = useState('Out Put Query Here'); 
   const [resultedData, setResultedData] = useState(); 
+  const [postData, setPostData] = useState();
   const [currentStep, setCurrentStep] = useState(1); 
-  const { handleFormSubmit,setApiItemData } = props;
+  const { handleFormSubmit,setApiItemData,setisSetApiItemData } = props;
   const [isShowJoin, setIsShowJoin] = useState(false);
+  const [isShowTemplateData, setIsShowTemplateData] = useState(false);
   const [isShowConditions, setIsShowConditions] = useState(false);
   const [checkboxState, setCheckboxState] = useState({});
   const [selectedItemID, setSelectedItemID] = useState(''); 
   const [selectedItemValue, setSelectedItemValue] = useState(''); 
+  const [queryTemplateData, setQueryTemplateData] = useState();
   // Function to update checkbox state
   const handleCheckboxChange = (database, type) => {
     console.log(resultedData);
@@ -89,6 +112,49 @@ const ManageItemsListComponentFromQuery: FC<ManageItemsListComponentFromQueryPro
   const gotToStepThree: React.MouseEventHandler<HTMLInputElement> = (event)=>{
     setCurrentStep(3);
   }
+
+  const useQueryTemplate  = (row)=>{
+//build schema_name
+//table_name
+//columns
+//where_condition
+//join_table_names
+//join_conditions
+//join_types
+
+//Pass to procedureBuilder
+let d = "apple, banana, orange";
+const array =  row['columns'].split(','); //row['columns']
+const newArray = array.map(item => ({ id: item, value: item }));
+setResultedData(newArray);
+setQueryTemplateName(row['queryTemplateName']);
+setCurrentStep(2);
+  }
+  const loadTemplate  = ()=>{
+    const apiUrl = 'http://172.16.61.31:7105/api/Form/GetQuery';
+
+        fetch(apiUrl)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 1) {
+                  setQueryTemplateData(data.responseValue);
+                } else {
+                    throw new Error(data.message);
+                }
+            })
+            .catch(error => {
+                console.error('There was a problem fetching the data:', error);
+            })
+            .finally(() => {
+                // setIsLoading(false);
+            });
+    //setIsShowTemplateData(true);
+  }
   const onSubmit: React.MouseEventHandler<HTMLInputElement> = (event)=>{
     // if(selectedItemID !== null && selectedItemID !== ''){
       var selectedItemId1 = '';
@@ -109,11 +175,12 @@ const ManageItemsListComponentFromQuery: FC<ManageItemsListComponentFromQueryPro
       // if(selectedItemID !== null && selectedItemID !== ''){
         setApiItemData({
           queryId:'1',
-          queryTemplateName:'GetDoctorList',
+          queryTemplateName:queryTemplateName,
           id: selectedItemId1,
           value: selectedItemValue1,
           label: selectedItemValue1
         })
+        setisSetApiItemData(true);
       // }
       
       // if(!editMode){
@@ -140,12 +207,50 @@ const ManageItemsListComponentFromQuery: FC<ManageItemsListComponentFromQueryPro
 
   const handleSelectedQueryTypeChange = (event: { target: { value: React.SetStateAction<string>; }; }) => {
     setSelectedQueryType(event.target.value);
+    loadTemplate();
 };
+
+
+const saveQueryTemplateInApi = () => {
+  var data = postData;
+  data.queryTemplateName = queryTemplateName;
+    
+    fetch('http://172.16.61.31:7105/api/Form/InsertQuery', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log('Success:', data);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+}
   
-  
+const columns: readonly Column[] = [
+  { id: 'id', label: 'Id', minWidth: 10 },
+  { id: 'queryTemplateName', label: 'Template Name', minWidth: 100 },
+  { id: 'schemaName', label: 'DataBase Name', minWidth: 100 },
+  { id: 'tableName', label: 'Table Name', minWidth: 100 },
+  { id: 'columns', label: 'Columns Name', minWidth: 100 },
+  { id: 'whereCondition', label: 'Condtions', minWidth: 100 },
+  { id: 'joinTableNames', label: 'Join Table Name', minWidth: 100 },
+  { id: 'joinConditions', label: 'Join Condtion', minWidth: 100 },
+  { id: 'joinTypes', label: 'Join Types', minWidth: 100 }
+ 
+];
 
   function saveQuery(event: MouseEvent<HTMLButtonElement, MouseEvent>): void {
-    
+    saveQueryTemplateInApi();
 
 
   }
@@ -157,7 +262,7 @@ const ManageItemsListComponentFromQuery: FC<ManageItemsListComponentFromQueryPro
  <div
               className=""
               style={{
-                maxWidth: "360px",
+                maxWidth: selectedQueryType == "Old" ? "100%" : "360px",
                 marginLeft: "auto",
                 marginRight: "auto",
               }}
@@ -191,13 +296,66 @@ const ManageItemsListComponentFromQuery: FC<ManageItemsListComponentFromQueryPro
       
       )}
        {selectedQueryType == "Old" && (<>
-        <input
-          className="btn btn-light btn-shadow m-t-20 m-r-10"
-          value={ "Query Builder"}
-          type='button'
-          onClick={onSubmit} />
-          
-          
+        <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+  <TableContainer sx={{ maxHeight: 600 }}>
+    <Table stickyHeader aria-label="sticky table">
+      <TableHead>
+        <TableRow>
+          {columns.map((column) => (
+            <TableCell
+              key={column.id}
+              align={column.align}
+              style={{ minWidth: column.minWidth }}
+            >
+              {column.label}
+            </TableCell>
+          ))}
+          <TableCell
+              key={'Action'}
+              align={'center'}
+              style={{ minWidth: '' }}
+            >
+              {'Action'}
+            </TableCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        { queryTemplateData && queryTemplateData.map((row) => {
+          function handleAction(id: any): void {
+            throw new Error('Function not implemented.');
+          }
+
+          function editTemplate(id: any): void {
+            throw new Error('Function not implemented.');
+          }
+
+          function deleteTemplate(id: any): void {
+            throw new Error('Function not implemented.');
+          }
+
+            return (
+              <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
+                {columns.map((column) => {
+                  const value = row[column.id];
+                  return (
+                    <TableCell key={column.id} align={column.align}>
+                      {value}
+                    </TableCell>
+                  );
+                })}
+                 <TableCell key={'Action'} align={'center'}>
+                 <Button onClick={() => useQueryTemplate(row)}>Use Template</Button>
+                 <Button onClick={() => editTemplate(row.id)}>Edit Template</Button>
+                 <Button onClick={() => deleteTemplate(row.id)}>Delete Template</Button>
+                    </TableCell>
+              </TableRow>
+            );
+          })}
+      </TableBody>
+    </Table>
+  </TableContainer>
+
+</Paper>
           </>
       
       )}
@@ -275,7 +433,7 @@ const ManageItemsListComponentFromQuery: FC<ManageItemsListComponentFromQueryPro
           >
            
             <div className="row mb-5">
-             <ProcedureBuilderPage  isShowJoin={isShowJoin} isShowConditions={isShowConditions} setResultedQuery={setResultedQuery} setResultedData={setResultedData}/>
+             <ProcedureBuilderPage  isShowJoin={isShowJoin} isShowConditions={isShowConditions} setResultedQuery={setResultedQuery} setResultedData={setResultedData} setPostData={setPostData}/>
             </div>
           </div>
         </div>
@@ -307,7 +465,7 @@ const ManageItemsListComponentFromQuery: FC<ManageItemsListComponentFromQueryPro
 
 
 
-  ) : null}
+  ) :  null}
     
   </> );
 }
