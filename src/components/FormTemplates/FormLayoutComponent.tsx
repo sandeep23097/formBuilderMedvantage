@@ -84,7 +84,7 @@ const FormLayoutComponent: FunctionComponent<
           </h6>
           {createdFormLayout ? (
             <>
-              <IconButton className="delete-icon" aria-label="delete" onClick={()=>{
+              <IconButton className="delete-icon" title="Delete Template" aria-label="delete" onClick={()=>{
                 if(confirm('Are you sure you want to delete the template?')){
                   dispatch(deleteTemplate(template?.id as string));
                 }

@@ -15,11 +15,11 @@ interface NewFormDataType{
   formName: string
 }
 
-const textboxStyle = {
-  minWidth: "100%",
-  maxWidth: "100%",
-  marginTop: "20px",
-};
+// const textboxStyle = {
+//   minWidth: "100%",
+//   maxWidth: "100%",
+//   marginTop: "20px",
+// };
  
 const NewFormDialogComponent: FunctionComponent<NewFormDialogComponentProps> = (props) => {
   const dispatch = useAppDispatch();
@@ -61,9 +61,11 @@ const NewFormDialogComponent: FunctionComponent<NewFormDialogComponentProps> = (
         onClose={() => {
           props.setOpenDialog(false);
         }}
+        className='custome-modal'
+        style={{maxWidth:'460px', margin:'0px auto'}}
       >
         <DialogTitle>
-          <div className="d-flex align-items-center justify-content-between">
+          <div className="d-flex align-items-center justify-content-between title">
             <span style={{ padding: "9px", cursor: "pointer" }}>
               <i className="fas fa-arrow-left"></i>
             </span>
@@ -76,24 +78,21 @@ const NewFormDialogComponent: FunctionComponent<NewFormDialogComponentProps> = (
           </div>
         </DialogTitle>
         <DialogContent>
-          <div className="p-30" style={{ minHeight: "500px" }}>
+          <div className="p-30">
             <div
-              className=""
-              style={{
-                maxWidth: "360px",
-                marginLeft: "auto",
-                marginRight: "auto",
-              }}
+            
             >
               <h4>Enter the following details:</h4>
               <form onSubmit={handleFormSubmit} style={{ minWidth: "100%" }}>
+                <div><label className="label">Form Name</label></div>
                 <div>
                   <TextField
-                    label="Form Name"
+                    // label="Form Name"
                     name="formName"
                     value={newFormData.formName}
                     onChange={handleInputChange}
-                    style={textboxStyle}
+                    // style={textboxStyle}
+                    placeholder='Enter Form Name'
                   />
                 </div>
                 <button
