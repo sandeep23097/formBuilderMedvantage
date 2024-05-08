@@ -62,7 +62,7 @@ const NewFormDialogComponent: FunctionComponent<NewFormDialogComponentProps> = (
           props.setOpenDialog(false);
         }}
         className='custome-modal'
-        style={{maxWidth:'460px', margin:'0px auto'}}
+        style={{maxWidth:'460px', margin:'-25% auto 0px auto'}}
       >
         <DialogTitle>
           <div className="d-flex align-items-center justify-content-between title">
