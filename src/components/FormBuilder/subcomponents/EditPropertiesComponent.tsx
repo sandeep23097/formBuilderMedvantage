@@ -8,11 +8,11 @@ import _ from "lodash";
 import useModalStrip from '../../../global-hooks/useModalStrip';
 import QueryBuilderModalComponent from '../QueryBuilderModal';
 
-const textboxStyle={
-  minWidth: "100%",
-  maxWidth: "100%",
-  marginTop: 10,
-}
+// const textboxStyle={
+//   minWidth: "100%",
+//   maxWidth: "100%",
+//   marginTop: 10,
+// }
 
 interface EditPropertiesComponentProps{
   selectedControl?:
@@ -211,25 +211,28 @@ setOpenDialog(false);
                   onSubmit={onContainerFormSubmit}
                   style={{ minWidth: "100%" }}
                 >
-                  <div className="main-form-title">
+                  <div className="main-form-title m-b-10">
                     Edit Container Properties
                   </div>
-                  <div>
+                  <div> <label htmlFor="" className="m-b-0">Container Heading</label> </div>
+                  <div className='m-b-10'>
                     <TextField
-                      label="Container Heading"
+                      // label="Container Heading"
                       name="heading"
                       value={containerUpdatedItem.heading}
                       onChange={handleChange}
-                      style={textboxStyle}
+                      // style={textboxStyle}
                     />
                   </div>
+
+                  <div> <label htmlFor="" className="m-b-0">Container Sub-Heading</label> </div>
                   <div>
                     <TextField
-                      label="Container Sub-Heading"
+                      // label="Container Sub-Heading"
                       name="subHeading"
                       value={containerUpdatedItem.subHeading}
                       onChange={handleChange}
-                      style={textboxStyle}
+                      // style={textboxStyle}
                     />
                   </div>
                   <input
@@ -254,14 +257,16 @@ setOpenDialog(false);
             <>
               <div className="main-form">
                 <form onSubmit={onFormSubmit} style={{ minWidth: "100%" }}>
-                  <div className="main-form-title">Edit Field Properties</div>
-                  <div>
+                  <div className="main-form-title m-b-10">Edit Field Properties</div>
+                  <div> <label htmlFor="" className='m-b-0'>Field Label Name</label> </div>
+                  <div className='m-b-20'>
                     <TextField
-                      label="Field Label Name"
+                      // label="Field Label Name"
                       name="labelName"
                       value={childUpdatedItem.labelName}
                       onChange={handleChange}
-                      style={textboxStyle}
+                      // style={textboxStyle}
+                      placeholder='Enter Field Label Name...'
                     />
                   </div>
                   {/* {childUpdatedItem.controlName === FormControlNames.INPUTTEXTFIELD ? <>
@@ -281,27 +286,31 @@ setOpenDialog(false);
                   childUpdatedItem.controlName === FormControlNames.INPUTMULTILINE ||
                   childUpdatedItem.controlName === FormControlNames.CHECKBOX ? (
                     <>
-                      <div>
+                    <div> <label htmlFor="" className='m-b-0'>Field Placeholder</label> </div>
+                      <div className='m-b-20'>
                         <TextField
-                          label="Field Placeholder"
+                          // label="Field Placeholder"
                           name="placeholder"
                           value={childUpdatedItem.placeholder}
                           onChange={handleChange}
-                          style={textboxStyle}
+                          // style={textboxStyle}
+                          placeholder='Enter Field Placeholder...'
                         />
                       </div>
                     </>
                   ) : (
                     ""
                   )}
+                   <div> <label htmlFor="" className='m-b-0'>Field Description</label> </div>
                   <div>
                     <TextField
-                      label="Field Description"
+                      // label="Field Description"
                       name="description"
                       value={childUpdatedItem.description}
                       onChange={handleChange}
                       multiline
-                      style={textboxStyle}
+                      // style={textboxStyle}
+                      placeholder='Enter Field Description...'
                     />
                   </div>
                   <div className="m-t-20 p-l-0">
@@ -392,10 +401,11 @@ setOpenDialog(false);
                   onSubmit={onMoveControlFormSubmit}
                   style={{ minWidth: "100%" }}
                 >
-                  <div className="main-form-title">Move Control to Step</div>
-                  <div>
+                  <div className="main-form-title" style={{marginBottom:'5px'}}>Move Control to Step</div>
+                  <div style={{marginBottom:'10px'}}>
                     <FormControl style={{ minWidth: "100%" }}>
-                      <InputLabel>Step:</InputLabel>
+                      <div> <label htmlFor="" className='m-b-0'>Select Step</label> </div>
+                      {/* <InputLabel>Step:</InputLabel> */}
                       <Select
                         name="containerId"
                         value={
@@ -403,7 +413,7 @@ setOpenDialog(false);
                             ? moveControlObj.containerId
                             : ""
                         }
-                        onChange={handleMoveControlSelectChange}
+                        onChange={handleMoveControlSelectChange}                        
                       >
                         {props.formLayoutComponents.map((item, ind) => {
                           return (
@@ -420,13 +430,14 @@ setOpenDialog(false);
                   </div>
                   <div>
                     <FormControl style={{ minWidth: "100%" }}>
-                      <InputLabel>Position:</InputLabel>
+                    <div> <label htmlFor="" className='m-b-0'>Select Position</label> </div>
+                      {/* <InputLabel>Position:</InputLabel> */}
                       <Select
                         name="position"
                         value={
                           moveControlObj && moveControlObj.position ? moveControlObj.position : ""
                         }
-                        onChange={handleMoveControlSelectChange}
+                        onChange={handleMoveControlSelectChange}                       
                       >
                         {getPositions()}
                       </Select>
@@ -434,12 +445,12 @@ setOpenDialog(false);
                   </div>
                   <input
                     type="submit"
-                    className="btn btn-light btn-shadow m-t-20 m-r-10"
+                    className="btn btn-light btn-shadow m-t-10 m-r-10"
                     value="Move"
                   />
                   <input
                     type="button"
-                    className="btn btn-light btn-shadow m-t-20 m-l-0"
+                    className="btn btn-light btn-shadow m-t-10 m-l-0"
                     value="Cancel"
                     onClick={() => {
                       if (selectControl) {

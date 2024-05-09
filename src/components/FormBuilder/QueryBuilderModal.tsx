@@ -72,9 +72,11 @@ const QueryBuilderModalComponent: FunctionComponent<QueryBuilderModalComponentPr
         onClose={() => {
           props.setOpenDialog(false);
         }}
+        className='custome-modal'
+        style={{margin:'0px auto 0px auto'}}
       >
         <DialogTitle>
-          <div className="d-flex align-items-center justify-content-between">
+          <div className="d-flex align-items-center justify-content-between title">
             <span style={{ padding: "9px", cursor: "pointer" }}>
               <i className="fas fa-arrow-left"></i>
             </span>

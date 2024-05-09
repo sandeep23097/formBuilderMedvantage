@@ -61,13 +61,15 @@ const ManageItemsListComponent: FC<ManageItemsListComponentProps> = (props)=> {
   }
 
   return ( <>
+   <div className='m-t-5'> <label htmlFor="" className='m-b-0'>Item Name</label> </div>
     <div>
       <TextField
-        label='Item Name'
+        // label='Item Name'
         name='newItem'
         value={itemName}
         onChange={handleChange}
         style={{minWidth: '100%'}}
+        placeholder='Enter Item Name...'
       />
       <input 
         className="btn btn-light btn-shadow m-t-20 m-r-10"

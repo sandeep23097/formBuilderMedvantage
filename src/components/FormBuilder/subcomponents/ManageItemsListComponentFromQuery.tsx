@@ -335,7 +335,7 @@ const columns: readonly Column[] = [
        {selectedQueryType == "Old" && (<>
         <Paper sx={{ width: '100%', overflow: 'hidden' }}>
   <TableContainer sx={{ maxHeight: 600 }}>
-    <Table stickyHeader aria-label="sticky table">
+    <Table stickyHeader aria-label="sticky table" className='table table-bordered table-template-query'>
       <TableHead>
         <TableRow>
           {columns.map((column) => (
@@ -381,6 +381,7 @@ const columns: readonly Column[] = [
                   );
                 })}
                  <TableCell key={'Action'} align={'center'}>
+                  <div className='table-query-button'>
                  <Button onClick={() => useQueryTemplate(row)}>Use Template</Button>
                     </TableCell>
               </TableRow>
