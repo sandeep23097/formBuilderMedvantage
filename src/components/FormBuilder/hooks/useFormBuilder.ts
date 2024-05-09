@@ -229,13 +229,17 @@ const createCamelCase = (str) =>
 }
   const createMicroService = async () => {
     var f = await saveFormWithouAlert();
+    if(f == undefined || f == 'undefined' || f == null)
+      {
+        f = JSON.parse(JSON.stringify(selectedTemplate));
+      }
+    console.log("FFFFFF",f);
     console.log("FFFFFF",createCamelCase(f.formName));
     var formName = createCamelCase(f.formName);
     var d = {
-      "microServiceName" : formName,
-      "formSavingData" : JSON.stringify(f)
+      "jsonData" : JSON.stringify(f)
   };
-    const apiUrl = `https://localhost:7294/api/Codes/createMicroservice`;
+    const apiUrl = `https://localhost:7028/api/Form/InsertForm`;
     try {
       const response = await fetch(apiUrl, {
           method: 'POST',

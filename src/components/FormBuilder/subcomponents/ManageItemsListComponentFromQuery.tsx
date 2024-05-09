@@ -14,6 +14,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
+import DynamicTable from '../../ReportBuilder/DynamicTable';
 
 
 
@@ -64,6 +65,8 @@ const ManageItemsListComponentFromQuery: FC<ManageItemsListComponentFromQueryPro
   const [selectedItemID, setSelectedItemID] = useState(''); 
   const [selectedItemValue, setSelectedItemValue] = useState(''); 
   const [queryTemplateData, setQueryTemplateData] = useState();
+  const [isShowResultData, setIsShowResultData] = useState(false);
+  const [resulteData, setResulteData] = useState();
   // Function to update checkbox state
   const handleCheckboxChange = (database, type) => {
     console.log(resultedData);
@@ -178,7 +181,9 @@ setCurrentStep(2);
           queryTemplateName:queryTemplateName,
           id: selectedItemId1,
           value: selectedItemValue1,
-          label: selectedItemValue1
+          label: selectedItemValue1,
+          schemaName : postData.schemaName,
+          fullQuery : postData.fullQuery
         })
         setisSetApiItemData(true);
       // }
@@ -230,6 +235,37 @@ const saveQueryTemplateInApi = () => {
     })
     .then(data => {
       console.log('Success:', data);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+}
+
+const executeQueryTemplateInApi = (event: MouseEvent<HTMLButtonElement, MouseEvent>) => {
+
+  var data = {
+    "schemaName": postData.schemaName,
+  "sqlStateMent": postData.fullQuery,
+  }
+    
+    fetch('http://172.16.61.31:7105/api/DynamicQuery/ExecuteQuery', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+     
+      return response.json();
+    })
+    .then(data => {
+      console.log('Success:', data);
+      setResulteData(data);
+      setIsShowResultData(true);
     })
     .catch(error => {
       console.error('Error:', error);
@@ -295,6 +331,7 @@ const columns: readonly Column[] = [
           </>
       
       )}
+   
        {selectedQueryType == "Old" && (<>
         <Paper sx={{ width: '100%', overflow: 'hidden' }}>
   <TableContainer sx={{ maxHeight: 600 }}>
@@ -345,8 +382,6 @@ const columns: readonly Column[] = [
                 })}
                  <TableCell key={'Action'} align={'center'}>
                  <Button onClick={() => useQueryTemplate(row)}>Use Template</Button>
-                 <Button onClick={() => editTemplate(row.id)}>Edit Template</Button>
-                 <Button onClick={() => deleteTemplate(row.id)}>Delete Template</Button>
                     </TableCell>
               </TableRow>
             );
@@ -359,7 +394,7 @@ const columns: readonly Column[] = [
           </>
       
       )}
-      
+         {isShowResultData == true && (<DynamicTable data={resulteData} />) }
       {/* {
         editMode && <input 
           className="btn btn-light btn-shadow m-t-20 m-r-10"
@@ -420,6 +455,7 @@ const columns: readonly Column[] = [
                 <h4 className="mb-0">{queryTemplateName}</h4>
                 <div className="action-buttons d-flex">
                 <Button onClick={saveQuery}> Save</Button>
+                <Button onClick={executeQueryTemplateInApi}> Preview Query</Button>
                 </div>
               </div>
             </div>

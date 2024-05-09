@@ -167,7 +167,7 @@ const ProcedureBuilderPage: FunctionComponent<ProcedureBuilderPageProps> = (prop
 
     const fetchTables = async (database: string) => {
         // const apiUrl = `https://localhost:5001/api/FHIR/GetAllTables?databaseName=${database}`;
-        const apiUrl = `http://172.16.19.96:5001/api/FHIR/GetAllTables?databaseName=${database}`;
+        const apiUrl = `http://172.16.61.31:7105/api/Form/GetAllTables?databaseName=${database}`;
         const response = await fetch(apiUrl);
         const data = await response.json();
         // Extract the key dynamically from the first response object
@@ -184,7 +184,7 @@ const ProcedureBuilderPage: FunctionComponent<ProcedureBuilderPageProps> = (prop
 
     };
     const fetchCoulmns = async (table: string, db: string) => {
-        const apiUrl = `http://172.16.19.96:5001/api/FHIR/GetAllCoulmns?databaseName=${db}&tableName=${table}`;
+        const apiUrl = `http://172.16.61.31:7105/api/Form/GetAllCoulmns?databaseName=${db}&tableName=${table}`;
         const response = await fetch(apiUrl);
         const data = await response.json();
         const coulmnNames = data.responseValue.map((obj: { [x: string]: any; }) => obj['field']);
@@ -201,7 +201,7 @@ const ProcedureBuilderPage: FunctionComponent<ProcedureBuilderPageProps> = (prop
     const fetchCoulmns2 = async (tables: [], db: string) => {
         var mainList =  [];
         tables.forEach(async table => {
-            const apiUrl = `http://172.16.19.96:5001/api/FHIR/GetAllCoulmns?databaseName=${db}&tableName=${table}`;
+            const apiUrl = `http://172.16.61.31:7105/api/Form/GetAllCoulmns?databaseName=${db}&tableName=${table}`;
             const response = await fetch(apiUrl);
             const data = await response.json();
             const coulmnNames = data.responseValue.map((obj: { [x: string]: any; }) => obj['field']);
@@ -328,7 +328,7 @@ const ProcedureBuilderPage: FunctionComponent<ProcedureBuilderPageProps> = (prop
 
 
     useEffect(() => {
-        const apiUrl = 'http://172.16.19.96:5001/api/FHIR/GetAllSchemas';
+        const apiUrl = 'http://172.16.61.31:7105/api/Form/GetAllSchemas';
 
         fetch(apiUrl)
             .then(response => {
@@ -425,6 +425,7 @@ const ProcedureBuilderPage: FunctionComponent<ProcedureBuilderPageProps> = (prop
             joinTableNames: selectedJoinTableString,
             joinConditions: selectedJoinCondtionString,
             joinTypes: selectedJoinTypeString,
+            fullQuery : query,
             userId: 0,
             clientId: 0,
           };

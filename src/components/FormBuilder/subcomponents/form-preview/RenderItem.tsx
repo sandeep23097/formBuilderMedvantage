@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import React, { FC, useState, useEffect } from 'react'
 import { FormLayoutComponentChildrenType } from '../../../../types/FormTemplateTypes';
 import { FormControlNames } from '../../../../utils/formBuilderUtils';
 import { Checkbox, FormControl, FormControlLabel, FormGroup, MenuItem, Radio, RadioGroup, Select, Switch, TextField } from '@mui/material';
@@ -16,6 +16,44 @@ interface RenderItemProps{
 
 const RenderItem: FC<RenderItemProps> = (props)=> {
   const { item } = props;
+  const [selectItems, setSelectItems] = useState([]);
+  const id = item.apiItemsDetails.id.split('.')[1] || "";
+  const value = item.apiItemsDetails.value.split('.')[1] || "";
+  const label = item.apiItemsDetails.label.split('.')[1] || "";
+  const [selectedDropDownValue, setSelectedDropDownValue] = useState('');
+  // const { id, value, label } = item.apiItemsDetails || {};
+  const handleDropDownChange = (event: { target: { value: React.SetStateAction<string>; }; }) => {
+    setSelectedDropDownValue(event.target.value);
+    // item.selectedValue = event.target.value
+};
+console.log("%%%%%%%%%%%%%%%%",id);
+  useEffect(() => {
+    if (item.apiItemsDetails) {
+      var data1 = {
+        "schemaName": item.apiItemsDetails.schemaName,
+      "sqlStateMent": item.apiItemsDetails.fullQuery,
+      }
+      const fetchData = async () => {
+        try {
+          const response = await fetch('http://172.16.61.31:7105/api/DynamicQuery/ExecuteQuery', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data1)
+          }); // API URL from item.apiItemsDetails
+          const data = await response.json();
+          setSelectItems(data.responseValue); // assuming your API returns an array of items
+        } catch (error) {
+          console.error('Failed to fetch items', error);
+        }
+      };
+
+      fetchData();
+    } else {
+      setSelectItems(item.items); // Use static items if apiItemsDetails is null
+    }
+  }, [item.apiItemsDetails, item.items]); 
 
   switch (item.controlName) {
     case FormControlNames.INPUTTEXTFIELD:
@@ -81,21 +119,29 @@ const RenderItem: FC<RenderItemProps> = (props)=> {
     case FormControlNames.SELECTDROPDOWN:
       return (
         <>
-          <FormControl style={{ minWidth: "100%" }}>
-            {/* <InputLabel>{item.labelName + (item.required?" *":"")}</InputLabel> */}
-            <Select
-              // style={{minWidth: '100%'}}
-              variant="outlined"
-              value={item.items.length  > 0 && item.items && item.items[0].value}
-            >
-              {item.items?.map((i, ind) => (
+        <FormControl style={{ minWidth: "100%" }}>
+          <Select
+            variant="outlined"
+            value={selectedDropDownValue}
+            onChange={handleDropDownChange}
+          >
+            {Array.isArray(selectItems) ? (
+              selectItems.map((i) => (
+                <MenuItem key={i[id]} value={i[value]}>
+                  {i[label]}
+                </MenuItem>
+              ))
+            ) : (
+              item.items?.map((i, ind) => (
                 <MenuItem key={i.value} value={i.value}>
                   {i.label}
                 </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </>
+              ))
+            )}
+          </Select>
+        </FormControl>
+      </>
+      
       );
 
     case FormControlNames.DATEFIELD:
@@ -180,9 +226,23 @@ const RenderItem: FC<RenderItemProps> = (props)=> {
         </>
       );
 
+
+      
+
+
     case FormControlNames.CHECKLIST:
       return (
         <>
+        {Array.isArray(selectItems) ? (
+          selectItems.map((i) => (
+            <FormControlLabel
+              key={i[id]}
+              control={<Checkbox />}
+              label={i[label]} // Changed from i[value] to i[label] for the label
+              style={{ marginLeft: "0px" }}
+            />
+          ))
+        ) : (
           <FormGroup>
             {item.items?.map((i, ind) => (
               <FormControlLabel
@@ -193,7 +253,8 @@ const RenderItem: FC<RenderItemProps> = (props)=> {
               />
             ))}
           </FormGroup>
-        </>
+        )}
+      </>
       );
   }
   return <></>
