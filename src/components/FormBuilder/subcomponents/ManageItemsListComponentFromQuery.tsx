@@ -383,6 +383,7 @@ const columns: readonly Column[] = [
                  <TableCell key={'Action'} align={'center'}>
                   <div className='table-query-button'>
                  <Button onClick={() => useQueryTemplate(row)}>Use Template</Button>
+                 </div>
                     </TableCell>
               </TableRow>
             );
