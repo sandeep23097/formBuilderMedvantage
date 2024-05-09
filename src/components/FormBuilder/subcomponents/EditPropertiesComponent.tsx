@@ -211,21 +211,24 @@ setOpenDialog(false);
                   onSubmit={onContainerFormSubmit}
                   style={{ minWidth: "100%" }}
                 >
-                  <div className="main-form-title">
+                  <div className="main-form-title m-b-10">
                     Edit Container Properties
                   </div>
-                  <div>
+                  <div> <label htmlFor="" className="m-b-0">Container Heading</label> </div>
+                  <div className='m-b-10'>
                     <TextField
-                      label="Container Heading"
+                      // label="Container Heading"
                       name="heading"
                       value={containerUpdatedItem.heading}
                       onChange={handleChange}
                       // style={textboxStyle}
                     />
                   </div>
+
+                  <div> <label htmlFor="" className="m-b-0">Container Sub-Heading</label> </div>
                   <div>
                     <TextField
-                      label="Container Sub-Heading"
+                      // label="Container Sub-Heading"
                       name="subHeading"
                       value={containerUpdatedItem.subHeading}
                       onChange={handleChange}
