@@ -75,7 +75,7 @@ const FormBuilder: FunctionComponent<FormBuilderProps> = (props) => {
       {!isMobile ? (
         <>
           <DndProvider backend={HTML5Backend}>
-            <div className="wrapper">
+            <div className="container-fluid">
               <div className="row">
                 <div
                   className={classes.sidebarHeight + " sidebar col-lg-3"}
@@ -86,7 +86,7 @@ const FormBuilder: FunctionComponent<FormBuilderProps> = (props) => {
                   </div>
                 </div>
                 <div className="col-lg-6">
-                  <div className="container p-20 h-100">
+                  <div className="container p-20 h-100 form-builder-container">
                     {/* Form Details and Action */}
                     <div className="row mb-5">
                       <div className="col-12">

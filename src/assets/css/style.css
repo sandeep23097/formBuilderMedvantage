@@ -20741,3 +20741,8 @@ justify-content: space-between;
 .table-query-button button{
   padding: 2px 6px !important;
 }
+
+.form-builder-container .container-drop{
+  padding: 10px !important;
+
+}
