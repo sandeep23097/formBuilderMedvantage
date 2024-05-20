@@ -22,7 +22,7 @@ interface ProcedureBuilderPageProps {
 
 const ProcedureBuilderPage: FunctionComponent<ProcedureBuilderPageProps> = (props) => {
     // Dummy data for items
-    const { isShowJoin,isShowConditions,setResultedQuery,setResultedData,setPostData } = props;
+    const { isShowJoin,isShowConditions,setResultedQuery,setResultedData,setPostData,setAllCoulmnWithType } = props;
     const joinTypeItems = [
         { label: 'INNER JOIN', value: 'INNER JOIN' },
         { label: 'LEFT JOIN', value: 'LEFT JOIN' },
@@ -187,10 +187,11 @@ const ProcedureBuilderPage: FunctionComponent<ProcedureBuilderPageProps> = (prop
         const apiUrl = `http://172.16.61.31:7105/api/Form/GetAllCoulmns?databaseName=${db}&tableName=${table}`;
         const response = await fetch(apiUrl);
         const data = await response.json();
-        const coulmnNames = data.responseValue.map((obj: { [x: string]: any; }) => obj['field']);
+        // const coulmnNames = data.responseValue.map((obj: { [x: string]: any; }) => {name: obj['field'],type:obj['type']});
+        // console.log("###################",coulmnNames);
 
         // Create new objects with the desired key name
-        const coulmnWithNewKeyName = coulmnNames.map((cNames: any) => ({ field: table + "." + cNames, id: table + "." + cNames }));
+        const coulmnWithNewKeyName = data.responseValue.map((obj: { [x: string]: any; }) => ({ field: table + "." + obj['field'], id: table + "." + obj['field'],type:obj['type'] }));
 
         return coulmnWithNewKeyName;
         //   return data;
@@ -204,10 +205,12 @@ const ProcedureBuilderPage: FunctionComponent<ProcedureBuilderPageProps> = (prop
             const apiUrl = `http://172.16.61.31:7105/api/Form/GetAllCoulmns?databaseName=${db}&tableName=${table}`;
             const response = await fetch(apiUrl);
             const data = await response.json();
-            const coulmnNames = data.responseValue.map((obj: { [x: string]: any; }) => obj['field']);
+           // const coulmnNames = data.responseValue.map((obj: { [x: string]: any; }) => obj['field']);
     
             // Create new objects with the desired key name
-            const coulmnWithNewKeyName = coulmnNames.map((cNames: any) => ({ field: db + "." + cNames, id: db + "." +  cNames }));
+            const coulmnWithNewKeyName = data.responseValue.map((obj: { [x: string]: any; }) => ({ field: table + "." + obj['field'], id: table + "." + obj['field'],type:obj['type'] }));
+
+           // const coulmnWithNewKeyName = coulmnNames.map((cNames: any) => ({ field: db + "." + cNames, id: db + "." +  cNames,type:cNames.type }));
             var c = [...mainList, ...coulmnWithNewKeyName];
             mainList = c;
         });
@@ -356,6 +359,7 @@ const ProcedureBuilderPage: FunctionComponent<ProcedureBuilderPageProps> = (prop
 
     const generateQuery = () => {
         let query = 'SELECT ';
+        setAllCoulmnWithType(selectedCols);
         var colString = selectedCols.map(col => col.id).join(', ');
         setSelectedColsString(colString);
         query += colString;

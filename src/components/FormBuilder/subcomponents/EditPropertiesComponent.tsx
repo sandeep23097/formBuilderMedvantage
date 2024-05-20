@@ -7,6 +7,7 @@ import { FormLayoutComponentsType } from '../../../types/FormTemplateTypes';
 import _ from "lodash";
 import useModalStrip from '../../../global-hooks/useModalStrip';
 import QueryBuilderModalComponent from '../QueryBuilderModal';
+import ApiBuilderModalComponent from '../ApiBuilderModal';
 
 // const textboxStyle={
 //   minWidth: "100%",
@@ -27,13 +28,37 @@ interface EditPropertiesComponentProps{
 }
 
 const EditPropertiesComponent: FC<EditPropertiesComponentProps> = (props)=> {
-  
+  const dataTypeMappings = {
+    INT: 'number',
+    VARCHAR: 'text',
+    TEXT: 'textarea',
+    DATE: 'date',
+    TIMESTAMP: 'datetime-local',
+    FLOAT: 'number',
+    DOUBLE: 'number',
+    DECIMAL: 'number',
+    BOOLEAN: 'checkbox',
+    BLOB: 'file'
+  };
   const {selectedControl, selectControl, editControlProperties, editContainerProperties} = props;
   const [updatedItem, setUpdatedItem] = useState<FormLayoutComponentChildrenType | FormLayoutComponentContainerType| {}>({});
   const [selectedListItemType, setSelectedListItemType] = useState('Static'); 
+  const [dataTypes, setDataTypes] = useState([
+    'INT', 
+    'VARCHAR',
+    'TEXT',
+    'DATE',
+    'TIMESTAMP',
+    'FLOAT',
+    'DOUBLE',
+    'DECIMAL',
+    'BOOLEAN',
+    'BLOB'
+  ]);
   const childUpdatedItem = updatedItem as FormLayoutComponentChildrenType;
   const containerUpdatedItem = updatedItem as FormLayoutComponentContainerType;
   const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const [openDialogForApi, setOpenDialogForApi] = useState<boolean>(false);
   const [isGotApiItemData, setIsGotApiItemData] = useState<boolean>(false);
   const [apiItemData, setApiItemData] = useState();
   const [isSetApiItemData, setisSetApiItemData] = useState(false);
@@ -80,7 +105,12 @@ setOpenDialog(false);
       ...prevState, [name]: value 
     }));
   }
-
+  const handleDDChange: React.ChangeEventHandler<any>  = (e)=>{
+    const { name, value } = e.target;
+    setUpdatedItem((prevState) => ({
+      ...prevState, [name]: value 
+    }));
+  }
 
   const addItemInList = (item:FormLayoutCoponentChildrenItemsType)=>{
     const newItems = _.cloneDeep((updatedItem as FormLayoutComponentChildrenType).items);
@@ -195,10 +225,15 @@ setOpenDialog(false);
       {
         setOpenDialog(true);
       }
+      else if(event.target.value == 'Api')
+      {
+        setOpenDialogForApi(true);
+      }
       else
       {
         setOpenDialog(false);
       }
+      
 };
   return (
     <>
@@ -335,6 +370,7 @@ setOpenDialog(false);
           <RadioGroup name={"ListItemType"} value = {selectedListItemType} onChange={handleSelectedListItemTypeChange} row>
            
               <FormControlLabel value={"Static"} key={"Static"} control={<Radio />} label={"Static Items"} />
+              <FormControlLabel value={"Api"} key={"Api"} control={<Radio />} label={"From Api"} />
               <FormControlLabel value={"Query"} key={"dynamic"} control={<Radio />} label={"From Query Items"} />
           
           </RadioGroup>
@@ -373,11 +409,78 @@ setOpenDialog(false);
      )}
   </>
 )}
-
+{selectedListItemType === 'Api' && (
+  <>
+    <ApiBuilderModalComponent
+      openDialog={openDialogForApi}
+      setOpenDialog={setOpenDialogForApi}
+      setApiItemData={setApiItemData}
+      setisSetApiItemData={setisSetApiItemData}
+    />
+    {isSetApiItemData && (<><h6>{apiItemData.queryTemplateName}</h6>
+    <br />
+    <span>
+   id:  {apiItemData.id}
+   </span>
+   <br />
+    <span>
+   value:  {apiItemData.value}
+   </span>
+   <br />
+    <span>
+   Label:  {apiItemData.label}
+   </span> 
+   <br /> 
+      </>
+     )}
+  </>
+)}
 
                       
                     </>
                   ) : null}
+<div className="main-form-title" style={{marginBottom:'5px'}}>Data Type & Length</div>
+                  <div style={{marginBottom:'10px'}}>
+                    <FormControl style={{ minWidth: "100%" }}>
+                      <div> <label htmlFor="" className='m-b-0'>Select Data Type</label> </div>
+                      {/* <InputLabel>Step:</InputLabel> */}
+                      <Select
+                        name="dataType"
+                        value={
+                          childUpdatedItem.dataType ?? ""
+                        }
+                        onChange={handleDDChange}                        
+                      >
+                        {dataTypes.map((item, ind) => {
+                          return (
+                            <MenuItem
+                              key={item}
+                              value={item}
+                            >
+                             {item}
+                            </MenuItem>
+                          );
+                        })}
+                      </Select>
+                    </FormControl>
+                  </div>
+                  <div style={{marginBottom:'10px'}}>
+                    <FormControl style={{ minWidth: "100%" }}>
+                      <div> <label htmlFor="" className='m-b-0'>Enter Length</label> </div>
+                      {/* <InputLabel>Step:</InputLabel> */}
+                      <TextField
+                      // label="Field Label Name"
+                      name="length"
+                      value={childUpdatedItem.length}
+                      onChange={handleChange}
+                      // style={textboxStyle}
+                      placeholder='Enter Field Label Name...'
+                    />
+                    </FormControl>
+                  </div>
+
+
+
                   <input
                     type="submit"
                     className="btn btn-light btn-shadow m-t-20 m-r-10"

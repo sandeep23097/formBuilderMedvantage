@@ -11,19 +11,23 @@ const dateFormat = 'yyyy, MMM dd';
 
 
 interface RenderItemProps{
-  item: FormLayoutComponentChildrenType
+  item: FormLayoutComponentChildrenType,
+  handleInputChange: (id?: string,value?: string) => void;
 }
 
 const RenderItem: FC<RenderItemProps> = (props)=> {
-  const { item } = props;
+  const { item,handleInputChange  } = props;
   const [selectItems, setSelectItems] = useState([]);
-  const id = item.apiItemsDetails.id.split('.')[1] || "";
-  const value = item.apiItemsDetails.value.split('.')[1] || "";
-  const label = item.apiItemsDetails.label.split('.')[1] || "";
+  const id = item?.apiItemsDetails?.id?.split('.')[1] || "";
+  const value = item?.apiItemsDetails?.value?.split('.')[1] || "";
+  const label = item?.apiItemsDetails?.label?.split('.')[1] || "";
   const [selectedDropDownValue, setSelectedDropDownValue] = useState('');
   // const { id, value, label } = item.apiItemsDetails || {};
   const handleDropDownChange = (event: { target: { value: React.SetStateAction<string>; }; }) => {
-    setSelectedDropDownValue(event.target.value);
+    const val = event.target.value;
+    
+    handleInputChange(item.labelName, val);
+    setSelectedDropDownValue(val);
     // item.selectedValue = event.target.value
 };
 console.log("%%%%%%%%%%%%%%%%",id);
@@ -64,6 +68,7 @@ console.log("%%%%%%%%%%%%%%%%",id);
             fullWidth={true}
             placeholder={item.placeholder}
             variant="outlined"
+            onChange={(e) => handleInputChange(item.labelName, e.target.value)}
           />
         </>
       );
@@ -78,6 +83,7 @@ console.log("%%%%%%%%%%%%%%%%",id);
             minRows={item.rows}
             placeholder={item.placeholder}
             variant="outlined"
+            onChange={(e) => handleInputChange(item.id, e.target.value)}
           />
         </>
       );
@@ -127,13 +133,13 @@ console.log("%%%%%%%%%%%%%%%%",id);
           >
             {Array.isArray(selectItems) ? (
               selectItems.map((i) => (
-                <MenuItem key={i[id]} value={i[value]}>
+                <MenuItem key={i[id]} value={i[id]}>
                   {i[label]}
                 </MenuItem>
               ))
             ) : (
               item.items?.map((i, ind) => (
-                <MenuItem key={i.value} value={i.value}>
+                <MenuItem key={i.value} value={i.id}>
                   {i.label}
                 </MenuItem>
               ))

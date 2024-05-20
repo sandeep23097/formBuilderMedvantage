@@ -1,4 +1,4 @@
-import React, {FC, useEffect, useState} from 'react'
+import React, {ForwardRefRenderFunction,forwardRef, useEffect, useState,useImperativeHandle, Ref} from 'react'
 import { FormLayoutCoponentChildrenItemsType } from '../../../types/FormTemplateTypes';
 import { Button, FormControl, FormControlLabel, IconButton, List, ListItem, ListItemSecondaryAction, ListItemText, Radio, RadioGroup, TextField } from '@mui/material';
 import { Delete, Edit, Label } from '@mui/icons-material';
@@ -20,19 +20,22 @@ import DynamicTable from '../../ReportBuilder/DynamicTable';
 
 
 interface Column {
-  id: 'id' | 'queryTemplateName' | 'schemaName' | 'tableName' | 'columns' | 'whereCondition' | 'joinTableNames'| 'joinConditions'| 'joinTypes';
+  id: 'id' | 'apiName' | 'baseUrl' | 'apiUrl' | 'headerDetails' | 'isEXternal' | 'parameters' | 'method'| 'failureResponse'| 'successResponse';
   label: string;
   minWidth?: number;
   align?: 'right';
   format?: (value: number) => string;
 }
-interface ManageItemsListComponentFromQueryProps{
+interface ManageItemsListComponentFromApiProps{
   // items: FormLayoutCoponentChildrenItemsType[] | undefined;
   handleFormSubmit: ()=>void;
   setApiItemData: (data:object)=>void;
-  setisSetApiItemData: (data:object)=>void;
   // deleteItemFromList: (item: FormLayoutCoponentChildrenItemsType)=>void;
   // editIteminList: (item: FormLayoutCoponentChildrenItemsType)=>void;
+}
+
+interface ManageStepBackRef {
+  setCurrentStepExternal: (step?: string) => void;
 }
 
 const useStyles = makeStyles()(() => ({
@@ -45,7 +48,7 @@ const useStyles = makeStyles()(() => ({
     overflowY: "auto",
   },
 })); 
-const ManageItemsListComponentFromQuery: FC<ManageItemsListComponentFromQueryProps> = (props)=> {
+const ManageItemsListComponentFromApi: ForwardRefRenderFunction<ManageStepBackRef,ManageItemsListComponentFromApiProps> = (props)=> {
 
   // const [runningItemId, setRunningItemId] = useState(3);
   const [editMode, setEditMode] = useState<boolean>(false);
@@ -68,6 +71,10 @@ const ManageItemsListComponentFromQuery: FC<ManageItemsListComponentFromQueryPro
   const [queryTemplateData, setQueryTemplateData] = useState();
   const [isShowResultData, setIsShowResultData] = useState(false);
   const [resulteData, setResulteData] = useState();
+  const [keysList, setKeysList] = useState();
+  const [previewResult, setPreviewResult] = useState([]);
+  const [previewResultHeader, setPreviewResultHeader] = useState();
+  const [isShowPreviewData, setIsShowPreviewData] = useState(false);
   // Function to update checkbox state
   const handleCheckboxChange = (database, type) => {
     console.log(resultedData);
@@ -101,6 +108,7 @@ const ManageItemsListComponentFromQuery: FC<ManageItemsListComponentFromQueryPro
     setQueryTemplateName(value);
   }
 
+
   const changeToEditMode = (item: FormLayoutCoponentChildrenItemsType)=>{
     setItemName(item.label);
     setEditItemId(item.id);
@@ -110,6 +118,10 @@ const ManageItemsListComponentFromQuery: FC<ManageItemsListComponentFromQueryPro
   const gotToStepOne: React.MouseEventHandler<HTMLInputElement> = (event)=>{
     setCurrentStep(1);
   }
+  const setCurrentStepExternal = (step)=>{
+    step = step - 1;
+    setCurrentStep(step);
+  }
   const gotToStepTwo: React.MouseEventHandler<HTMLInputElement> = (event)=>{
     setCurrentStep(2);
   }
@@ -118,24 +130,20 @@ const ManageItemsListComponentFromQuery: FC<ManageItemsListComponentFromQueryPro
   }
 
   const useQueryTemplate  = (row)=>{
-//build schema_name
-//table_name
-//columns
-//where_condition
-//join_table_names
-//join_conditions
-//join_types
 
-//Pass to procedureBuilder
-let d = "apple, banana, orange";
-const array =  row['columns'].split(','); //row['columns']
-const newArray = array.map(item => ({ id: item, value: item }));
-setResultedData(newArray);
-setQueryTemplateName(row['queryTemplateName']);
+console.log("DDDDDDDDDDDDDDDDD",row.successResponse);
+const successData = JSON.parse(row.successResponse);
+console.log("EEEEEEEEEEEEEEE",successData);
+const keys = Object.keys(successData[0]);
+// const array =  row['columns'].split(','); //row['columns']
+const newArray = keys.map(item => ({ id: item, value: item }));
+setKeysList(newArray);
+setResultedData(row);
+setQueryTemplateName(row['apiName']);
 setCurrentStep(2);
   }
   const loadTemplate  = ()=>{
-    const apiUrl = 'http://172.16.61.31:7105/api/Form/GetQuery';
+    const apiUrl = 'http://172.16.61.31:7083/api/ApiMaster/GetAllApiMaster';
 
         fetch(apiUrl)
             .then(response => {
@@ -219,73 +227,76 @@ setCurrentStep(2);
     loadTemplate();
 };
 
+const findKeysWithPattern = (obj, pattern) => {
+  const requiredKeys = [];
 
-const saveQueryTemplateInApi = () => {
-  var data = postData;
-  data.queryTemplateName = queryTemplateName;
-    
-    fetch('http://172.16.61.31:7105/api/Form/InsertQuery', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
+  // Iterate over each property in the object
+  for (const key in obj) {
+    if (obj.hasOwnProperty(key)) { // Check if the key is actually a property of the object
+      const value = obj[key];
+      // Check if the value is a string and ends with the specified pattern
+      if (typeof value === 'string' && value.endsWith(pattern)) {
+        requiredKeys.push(key);
       }
-      return response.json();
-    })
-    .then(data => {
-      console.log('Success:', data);
-    })
-    .catch(error => {
-      console.error('Error:', error);
-    });
-}
-
-const executeQueryTemplateInApi = (event: MouseEvent<HTMLButtonElement, MouseEvent>) => {
-
-  var data = {
-    "schemaName": postData.schemaName,
-  "sqlStateMent": postData.fullQuery,
+    }
   }
-    
-    fetch('http://172.16.61.31:7105/api/DynamicQuery/ExecuteQuery', {
-      method: 'POST',
+
+  // Return the array of keys that have values ending with the pattern
+  return requiredKeys;
+}
+
+
+const executeQueryTemplateInApi = async (apiData) => {
+  var requiredParams = [];
+  if(apiData.parameters != "")
+    {
+       requiredParams = findKeysWithPattern(apiData.parameters,"[*]");
+    }
+    if(requiredParams.length > 0)
+      {
+        alert("required parameters");
+      }
+  
+  try {
+    const response = await fetch(apiData.apiUrl, {
+      method: apiData.method,
       headers: {
         'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
       }
-     
-      return response.json();
-    })
-    .then(data => {
-      console.log('Success:', data);
-      setResulteData(data);
-      setIsShowResultData(true);
-    })
-    .catch(error => {
-      console.error('Error:', error);
+      // Include body if needed, depending on the method
+      // body: JSON.stringify(apiData.parameters)
     });
-}
-  
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const data = await response.json();
+    
+    const tableHeaders = data.responseValue.length > 0 ? Object.keys(data.responseValue[0]) : [];
+    console.log("FFFFFFFFF",tableHeaders);
+    setPreviewResultHeader(tableHeaders);
+    setPreviewResult(data.responseValue);
+    setIsShowPreviewData(true);
+    setCurrentStep(3);
+  } catch (error) {
+    // setError(error.message);
+    throw new Error(error.message);
+  } finally {
+    // setLoading(false);
+  }
+};
+
+
 const columns: readonly Column[] = [
   { id: 'id', label: 'Id', minWidth: 10 },
-  { id: 'queryTemplateName', label: 'Template Name', minWidth: 100 },
-  { id: 'schemaName', label: 'DataBase Name', minWidth: 100 },
-  { id: 'tableName', label: 'Table Name', minWidth: 100 },
-  { id: 'columns', label: 'Columns Name', minWidth: 100 },
-  { id: 'whereCondition', label: 'Condtions', minWidth: 100 },
-  { id: 'joinTableNames', label: 'Join Table Name', minWidth: 100 },
-  { id: 'joinConditions', label: 'Join Condtion', minWidth: 100 },
-  { id: 'joinTypes', label: 'Join Types', minWidth: 100 }
+  { id: 'apiName', label: 'Api Name', minWidth: 100 },
+  { id: 'baseUrl', label: 'Base Url', minWidth: 100 },
+  { id: 'apiUrl', label: 'Api Url', minWidth: 100 },
+  { id: 'headerDetails', label: 'Headers', minWidth: 100 },
+  { id: 'isEXternal', label: 'Is External', minWidth: 100 },
+  { id: 'parameters', label: 'Parameters', minWidth: 100 },
+  { id: 'method', label: 'Method', minWidth: 100 },
+  { id: 'failureResponse', label: 'Failure Response', minWidth: 100 },
+  { id: 'successResponse', label: 'Success Response', minWidth: 100 }
  
 ];
 
@@ -294,6 +305,9 @@ const columns: readonly Column[] = [
 
 
   }
+  // useImperativeHandle(ref, () => ({
+  //   setCurrentStepExternal: (step?: string) => setCurrentStep(step - 1)
+  // }));
 
   return ( <>
 
@@ -441,15 +455,12 @@ const columns: readonly Column[] = [
         style={{ paddingLeft: "30px !important" }}
       >
         <div className="container">
-        <Button  onClick={() => { setIsShowJoin(!isShowJoin);}} style={{marginRight:'10px'}}>
-                       {isShowJoin ? 'Hide Join' : 'Add Join'} 
-                    </Button> <br />
-                    <Button  onClick={() => { setIsShowConditions(!isShowConditions);}}>
-                       {isShowConditions ? 'Hide Conditions' : 'Add Conditions'} 
-                    </Button> <br />
+        {/* {resultedData.headerDetails} <br />
+        {resultedData.method} <br /> */}
+        {resultedData.parameters} <br />
+         {/* 1 <br />
          1 <br />
-         1 <br />
-         1 <br />
+         1 <br /> */}
         </div>
       </div>
       <div className="col-lg-8">
@@ -460,8 +471,8 @@ const columns: readonly Column[] = [
               <div className="d-flex justify-content-between align-items-between">
                 <h4 className="mb-0">{queryTemplateName}</h4>
                 <div className="action-buttons d-flex">
-                <Button onClick={saveQuery}> Save</Button>
-                <Button onClick={executeQueryTemplateInApi}> Preview Query</Button>
+                {/* <Button onClick={saveQuery}> Save</Button> */}
+                <Button onClick={() => {executeQueryTemplateInApi(resultedData);}}> Preview Api</Button>
                 </div>
               </div>
             </div>
@@ -475,7 +486,7 @@ const columns: readonly Column[] = [
           >
            
             <div className="row mb-5">
-             <ProcedureBuilderPage  isShowJoin={isShowJoin} isShowConditions={isShowConditions} setResultedQuery={setResultedQuery} setResultedData={setResultedData} setPostData={setPostData} setAllCoulmnWithType={setAllCoulmnWithType}/>
+             {/* <ProcedureBuilderPage  isShowJoin={isShowJoin} isShowConditions={isShowConditions} setResultedQuery={setResultedQuery} setResultedData={setResultedData} setPostData={setPostData} setAllCoulmnWithType={setAllCoulmnWithType}/> */}
             </div>
           </div>
         </div>
@@ -487,7 +498,7 @@ const columns: readonly Column[] = [
         <Button  onClick={() => { onSubmit();}}>
                         Add As Item
                     </Button>
-      {resultedData?.map((i, ind) => (
+      {keysList?.map((i, ind) => (
        
         
         <SelectedCoulmnsComponent
@@ -507,9 +518,33 @@ const columns: readonly Column[] = [
 
 
 
-  ) :  null}
+  ) : isShowPreviewData ? (
+    <div>
+    <table>
+      <thead>
+        <tr>
+          {previewResultHeader.map(header => (
+            <th key={header}>{header}</th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {previewResult.map((item, index) => (
+          <tr key={index}>
+            {previewResultHeader.map(header => (
+              <td key={`${index}-${header}`}>{item[header]}</td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+  ) : null
+  }
     
   </> );
 }
 
-export default ManageItemsListComponentFromQuery;
+export default forwardRef(ManageItemsListComponentFromApi);
+
+

@@ -1,7 +1,7 @@
-import React, { FC, useState } from "react";
+import React, { FC, useState,useEffect  } from "react";
 import RenderItem from "./RenderItem";
 import { FormLayoutComponentsType } from "../../../../types/FormTemplateTypes";
-
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 const previewWindowStyle = {
   backgroundColor: 'white', 
   height: '81vh',
@@ -15,19 +15,47 @@ const previewWindowStyle = {
 
 interface StepperFormPreviewProps{
   formLayoutComponents: FormLayoutComponentsType[];
-  screenType: string
+  screenType: string,
+  formName: string
 }
 
 const StepperFormPreview: FC<StepperFormPreviewProps> = (props)=> {
   const [componentIndex, setComponentIndex] = useState(0);
-  const { formLayoutComponents, screenType } = props;
-
+  const { formLayoutComponents, screenType ,formName} = props;
+  const [inputValues, setInputValues] = useState({});
   const component = formLayoutComponents[componentIndex];
-
+  const [tableData, setTableData] = useState([]);
+  const [headings, setHeadings] = useState([]);
+  const handleInputChange = (id, value) => {
+    setInputValues(prev => ({ ...prev, [id]: value }));
+  };
   const nextPrevIndex = (val: number)=>{
     setComponentIndex((prev)=>prev + val);
   }
+  const fetchData = async () => {
+    try {
+      var url = `http://172.16.61.31:8002/api/${formName}/GetAll${formName}`;
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      console.log(data);
+      setTableData(data.responseValue);
 
+      // Assuming data is an array of objects
+      if (data.responseValue.length > 0) {
+        setHeadings(Object.keys(data.responseValue[0])); // Takes the keys of the first object to use as headings
+      }
+    } catch (error) {
+      console.error("Failed to fetch data:", error);
+    }
+  };
+  useEffect(() => {
+    
+
+    fetchData();
+  }, []);
   const isMobile = screenType === 'mobile';
 
   return (
@@ -38,8 +66,32 @@ const StepperFormPreview: FC<StepperFormPreviewProps> = (props)=> {
             <div style={{...previewWindowStyle as any,width: isMobile ? '400px':'initial'}} className="p-20">
               <div className="main-form">
                 <form
-                  onSubmit={(e) => {
+                  onSubmit={async (e) => {
                     e.preventDefault();
+                    console.log("ddddddddddd",formName);
+                    console.log("eeeeeeeee",inputValues);
+                    try {
+                      var url = `http://172.16.61.31:8002/api/${formName}/Insert${formName}`;
+                      const response = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(inputValues)
+                      });
+                      if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                      }
+                      const data = await response.json();
+                      fetchData();
+                   //   setMessage('Data submitted successfully!');
+                      console.log(data); // Process your response data further
+                    } catch (error) {
+                    //  setMessage('Failed to submit data');
+                      console.error('There was an error!', error);
+                    }
+
+
                   }}
                   style={{ minWidth: "100%" }}
                 >
@@ -62,7 +114,7 @@ const StepperFormPreview: FC<StepperFormPreviewProps> = (props)=> {
                           </div>
                         </>
                       ) : null}
-                      <RenderItem key={child.id} item={child} />
+                      <RenderItem key={child.id} item={child} handleInputChange={handleInputChange} />
                       {/* {renderItem(child)} */}
                     </div>
                   ))}
@@ -92,10 +144,39 @@ const StepperFormPreview: FC<StepperFormPreviewProps> = (props)=> {
                       type="submit"
                       className="btn btn-primary btn-shadow m-t-20 m-r-10"
                       value="Submit"
+                      
                     />
                   )}
                 </form>
               </div>
+
+              <div className="main-form">
+              <TableContainer component={Paper} style={{ marginTop: '20px' }}>
+      <Table sx={{ minWidth: 650 }} aria-label="simple table">
+        <TableHead>
+          <TableRow>
+            {headings.map((heading, index) => (
+              <TableCell key={index} style={{ fontWeight: 'bold', textTransform: 'uppercase' }}>
+                {heading.replace(/_/g, ' ')} {/* Replaces underscores with spaces if any */}
+              </TableCell>
+            ))}
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {tableData.map((row, index) => (
+            <TableRow key={index} hover>
+              {headings.map((heading, idx) => (
+                <TableCell key={idx}>
+                  {row[heading]}
+                </TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+                </div>
+
             </div>
           </div>
         </>

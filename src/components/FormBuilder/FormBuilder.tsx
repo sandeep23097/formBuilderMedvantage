@@ -186,10 +186,11 @@ const FormBuilder: FunctionComponent<FormBuilderProps> = (props) => {
             </div>
             {/* Preview Drawer */}
             <FormPreview
-              screenType="mobile"
+              screenType="web"
               showPreview={showPreview}
               formLayoutComponents={formLayoutComponents}
               closePreviewDrawer={closePreviewDrawer}
+              formName={selectedTemplate?.formName}
             />
           </DndProvider>
         </>

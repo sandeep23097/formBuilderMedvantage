@@ -7,7 +7,8 @@ interface FormPreviewProps{
   screenType: string;
   showPreview: boolean;
   closePreviewDrawer: ()=>void;
-  formLayoutComponents: FormLayoutComponentsType[]
+  formLayoutComponents: FormLayoutComponentsType[],
+  formName: string;
 }
 
 interface FormPreviewStates {
@@ -29,12 +30,12 @@ class FormPreview extends Component<FormPreviewProps, FormPreviewStates> {
 
   render() { 
 
-    const { showPreview, formLayoutComponents } = this.props;
+    const { showPreview, formLayoutComponents,formName } = this.props;
 
     return (
       <>
         <Drawer open={showPreview} anchor="right">
-          <div style={{ minWidth: "30vw", backgroundColor: "#f8f9fa", height: "100vh" }}>
+          <div style={{ minWidth: "80vw", backgroundColor: "#f8f9fa", height: "100vh" }}>
             <div className="container">
               <div className="p-20">
                 <div className="d-flex align-items-center">
@@ -45,7 +46,7 @@ class FormPreview extends Component<FormPreviewProps, FormPreviewStates> {
                   ></i>
                   <h4>Preview</h4>
                 </div>
-                <StepperFormPreview screenType={this.state.screenType} formLayoutComponents={formLayoutComponents} />
+                <StepperFormPreview screenType={this.state.screenType} formLayoutComponents={formLayoutComponents} formName={formName} />
               </div>
             </div>
           </div>

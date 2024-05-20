@@ -48,7 +48,8 @@ interface FormLayoutComponentChildrenType{
   placeholder?: string,
   rows?: number,
   dataType?: string
-  position?: number
+  position?: number,
+  length?: number,
 }
 
 interface FormLayoutCoponentChildrenItemsType{
